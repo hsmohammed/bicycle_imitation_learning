@@ -1,0 +1,2 @@
+model_checkpoint_path: "out"
+all_model_checkpoint_paths: "out"

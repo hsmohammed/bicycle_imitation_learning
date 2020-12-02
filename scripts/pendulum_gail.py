@@ -6,9 +6,9 @@ from rllab.baselines.linear_feature_baseline import LinearFeatureBaseline
 from rllab.envs.gym_env import GymEnv
 
 
-from inverse_rl.algos.irl_trpo import IRLTRPO
-from inverse_rl.models.imitation_learning import GAIL
-from inverse_rl.utils.log_utils import rllab_logdir, load_latest_experts
+from inverse_irl.algos.irl_trpo import IRLTRPO
+from inverse_irl.models.imitation_learning import GAIL
+from inverse_irl.utils.log_utils import rllab_logdir, load_latest_experts
 
 def main():
     env = TfEnv(GymEnv('Pendulum-v0', record_video=False, record_log=False))

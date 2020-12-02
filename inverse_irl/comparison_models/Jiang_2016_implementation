@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 27 19:15:50 2020
+
+@author: hossam
+"""
+import gym
+import gym_bicycle
+import numpy as np
+import matplotlib.pyplot as plt
+env = gym.make('bicycle-v0', num_agents = 3)
+
+
+env.reset()
+
+
+env.state[1] = 0
+env.state[2] = 7.75
+env.state[5] = 0
+env.state[6] = 7.75
+env.state[8] = 3.2
+env.state[9] = 0
+env.state[10] = 7.75
+
+env.render()
+if env.state[0] > 0:
+    p = 0.8
+else:
+    p = 0.3
+    
+
+v_max = 4.2
+d_c = 0.9
+acceleration = True
+deceleration = False
+v_a = 1.2
+
+d_od = 6
+
+    
+def new_step():
+    if acceleration:
+        env.state[0] = min(env.state[0] + 1, v_max)
+        env.state[4] = min(env.state[4] + 1, v_max)
+    d = env.state[7]-env.state[3]
+    d_lead = env.state[11]-env.state[7]
+    d_lead2 = 3
+    # deceleration
+    if deceleration:
+        if d < d_od:
+            env.state[0] = min(env.state[0], d, max(d_lead, d_c))
+        else:
+            env.state[0] = min(env.state[0], d)
+        
+        if d_lead < d_od:
+            env.state[4] = min(env.state[4], d_lead, max(d_lead2, d_c))
+        else:
+            env.state[4] = min(env.state[4], d_lead)
+    v_vir_fol = max(env.state[0] - 1, 0)
+    v_vir_lead = max(env.state[4] - 1, 0)
+    v_vir_lead2 = max(env.state[7] - 1, 0)
+    env.state[0] = min(env.state[0] + min(v_vir_lead,v_a), v_max)
+    env.state[4] = min(env.state[4] + min(v_vir_lead2,v_a), v_max)
+    randomization = np.random.binomial(1, p)
+    if randomization:
+        env.state[0] = np.max(env.state[0]-1, 0)
+        env.state[4] = np.max(env.state[4]-1, 0)
+    
+    env.state[3] = env.state[3] + env.state[0]
+    env.state[7] = env.state[7] + env.state[4]
+    env.state[11] = env.state[11] + env.state[8]
+    
+    
+    print("follow speed=",
+          env.state[0],
+          "\nlead (1) speed =",
+          env.state[4],
+          "\nlead (2) speed=",
+          env.state[8],
+          "\ny follow=",
+          env.state[3],
+          "\ny lead (1)=",
+          env.state[7],
+          "\ny lead (2)=",
+          env.state[11])
+    env.render()
+
+new_step()
+
+env.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# for i in range(2):
+#     # acceleration
+#     if acceleration:
+#         env.state[0] = min(env.state[0] + 1, v_max)
+#         env.state[4] = min(env.state[4] + 1, v_max)
+#     d = env.state[7]-env.state[3]
+#     d_lead = env.state[11]-env.state[7]
+#     d_lead2 = 3
+#     # deceleration
+#     if deceleration:
+#         if d < 1:
+#             env.state[0] = min(env.state[0], d, max(d_lead, d_c))
+#         else:
+#             env.state[0] = min(env.state[0], d)
+        
+#         if d_lead < 1:
+#             env.state[4] = min(env.state[4], d_lead, max(d_lead2, d_c))
+#         else:
+#             env.state[4] = min(env.state[4], d_lead)
+#     v_vir_fol = max(env.state[0] - 1, 0)
+#     v_vir_lead = max(env.state[4] - 1, 0)
+#     v_vir_lead2 = max(env.state[7] - 1, 0)
+#     env.state[0] = min(env.state[0] + min(v_vir_lead,v_a), v_max)
+#     env.state[4] = min(env.state[4] + min(v_vir_lead2,v_a), v_max)
+#     randomization = np.random.binomial(1, p)
+#     if randomization:
+#         env.state[0] = np.max(env.state[0]-1, 0)
+#         env.state[4] = np.max(env.state[4]-1, 0)
+    
+#     env.state[3] = env.state[3] + env.state[0]
+#     env.state[7] = env.state[7] + env.state[4]
+#     env.state[11] = env.state[11] + env.state[8]
+    
+    
+#     print(env.state[3], env.state[7], env.state[11])
+#     env.render()
+    
+
+
+
