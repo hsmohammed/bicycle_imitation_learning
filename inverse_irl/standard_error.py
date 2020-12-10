@@ -6,12 +6,11 @@ Created on Wed Nov 27 15:16:42 2019
 """
 import numpy as np
 import operator
-import tensorflow as tf
 import gym
 import gym_bicycle
 import matplotlib.pyplot as plt
 import pandas as pd
-np.
+import tensorflow as tf
 
 env = gym.make('bicycle-v0')
 
@@ -67,12 +66,12 @@ for m in range(1):
         lead_actions = np.array([data_test_Obj_ID['acc_SGF'][j],data_test_Obj_ID['yaw_rate'][j]])
         
         
-        with tf.Session():    
-            sess = tf.get_default_session()
-            sess.run(tf.global_variables_initializer())
+        with tf.compat.v1.Session():    
+            sess = tf.compat.v1.get_default_session()
+            sess.run(tf.compat.v1.global_variables_initializer())
             follow_actions = policy.get_action(observation= env.state)
             
-        env.step(action=follow_actions[0], action_lead=lead_actions)
+        env.step(action=follow_actions[0])
     #        env.render()
         state_action = np.concatenate([env.state,follow_actions[0]])
         state_action = np.concatenate([Traj,state_action])
@@ -98,9 +97,9 @@ for m in range(1,50):
         lead_actions = np.array([data_test_Obj_ID['acc_SGF'][j],data_test_Obj_ID['yaw_rate'][j]])
         
         
-        with tf.Session():    
-            sess = tf.get_default_session()
-            sess.run(tf.global_variables_initializer())
+        with tf.compat.v1.Session():    
+            sess = tf.compat.v1.get_default_session()
+            sess.run(tf.compat.v1.global_variables_initializer())
             follow_actions = policy.get_action(observation= env.state)
             
         env.step(action=follow_actions[0], action_lead=lead_actions)

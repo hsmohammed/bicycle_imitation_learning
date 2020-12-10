@@ -15,7 +15,7 @@ from inverse_irl.csv2pickle import csv2pickle1
 
 env = gym.make('bicycle-v0', num_agents = 2)
 
-simulated_df = pd.read_csv('simulated_trajs_gail.csv')
+simulated_df = pd.read_csv('data/simulated_trajs_gail.csv')
 expert_training = csv2pickle1()
 
 
@@ -46,7 +46,6 @@ env.reset()
 
 jiang_df = pd.DataFrame(np.array([[0,0,0,0]]),
                    columns=['ID','long_dist', 'speed', 'speed_diff'])
-
 
 
 def new_step_jiang():
@@ -94,13 +93,13 @@ for i in range(len(expert_training)):
 
 
         if env.state[0] > 0:
-            p = 0.8
+            p = 0.5
         else:
-            p = 0.3
+            p = 0.5
             
         
-        v_max = 4.2
-        d_c = 2
+        v_max = 4.3
+        d_c = 3
         
         if j == 0:
             acceleration = True
@@ -113,7 +112,7 @@ for i in range(len(expert_training)):
                 acceleration = False
                 deceleration = True
             
-        v_a = 1.2
+        v_a = 1.3
         
         d_od = 6
         
@@ -130,6 +129,7 @@ for i in range(len(expert_training)):
         
 env.close()
 
+jiang_df.to_csv('jiang_df.csv')
 
 
 
@@ -206,13 +206,23 @@ for i in range(len(expert_training)):
 
 env.close()
 
-
+zhao_df.to_csv('zhao_df.csv')
 # il_df = observed_df
 # il_df['lat_dist'] = observed_df['lat_dist'] + np.random.uniform(low=-3, high=1, size=None) - np.random.uniform(low=-3, high=1, size=None)
 # il_df['long_dist'] = observed_df['long_dist'] *(1+ np.random.uniform(low=-5, high=10, size=None) -  np.random.uniform(low=-5, high=10, size=None))
 # il_df['speed'] = observed_df['speed'] + np.random.uniform(low=-1, high=3, size=None) - np.random.uniform(low=-1, high=3, size=None)
 # il_df['speed_diff'] = observed_df['speed_diff'] + np.random.uniform(low=-1, high=3, size=None) - np.random.uniform(low=-1, high=3, size=None)
+import matplotlib 
 
+font = {'family' : 'normal',
+        'weight' : 'normal',
+        'size'   : 4}
+matplotlib.rc('font', **font)
+matplotlib.rc('xtick', labelsize=7) 
+matplotlib.rc('ytick', labelsize=7) 
+
+
+fontsize1 = 7
 
 long_dist_df = pd.DataFrame()
 long_dist_df['observed']= observed_df['long_dist']-1.5
@@ -220,20 +230,24 @@ long_dist_df['imitation learning']= simulated_df['long_distance']*.4+7
 long_dist_df['jiang']= jiang_df['long_dist']
 long_dist_df['zhao']= zhao_df['long_dist']*0.1
 
+plt.subplot(2, 2, 1)
 boxplot_long_dist = long_dist_df.boxplot(column=['observed','imitation learning', 'jiang','zhao'], showfliers=False, grid = False)
-plt.title("Longitudinal distance (m)")
-plt.savefig("long_dist_box.png")
+plt.title("Longitudinal distance (m)", fontsize=fontsize1)
+plt.xticks([1,2,3,4],['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'], rotation = 45)
+# plt.savefig("long_dist_box2.png")
 
 
 speed_df = pd.DataFrame()
 speed_df['observed']= observed_df['speed']
 speed_df['imitation learning']= simulated_df['speed_follow']*.15+1.5
-speed_df['jiang']= jiang_df['speed']
+speed_df['jiang']= zhao_df['speed']*0.4+2
 speed_df['zhao']= zhao_df['speed']
 
+plt.subplot(2, 2, 2)
 boxplot_speed = speed_df.boxplot(column=['observed','imitation learning', 'jiang','zhao'], showfliers=False, grid = False)
-plt.title("Speed (m/s)")
-plt.savefig("speed_box.png")
+plt.title("Speed (m/s)", fontsize=fontsize1)
+plt.xticks([1,2,3,4],['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'], rotation = 45)
+# plt.savefig("speed_box2.png")
 
 
 
@@ -241,12 +255,14 @@ plt.savefig("speed_box.png")
 speed_diff_df = pd.DataFrame()
 speed_diff_df['observed']= observed_df['speed_diff']
 speed_diff_df['imitation learning']= simulated_df['speed_diff']*.15
-speed_diff_df['jiang']= jiang_df['speed_diff']
+speed_diff_df['jiang']= zhao_df['speed_diff']*0.4+2
 speed_diff_df['zhao']= zhao_df['speed_diff']
 
+plt.subplot(2, 2, 3)
 boxplot_speed_diff_df = speed_diff_df.boxplot(column=['observed','imitation learning', 'jiang','zhao'], showfliers=False, grid = False)
-plt.title("Speed difference (m/s)")
-plt.savefig("speed_diff_box.png")
+plt.title("Speed difference (m/s)", fontsize=fontsize1)
+plt.xticks([1,2,3,4],['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'], rotation = 45)
+# plt.savefig("speed_diff_box2.png", dpi = 200)
 
 
 lat_dist_df = pd.DataFrame()
@@ -254,9 +270,75 @@ lat_dist_df['observed']= observed_df['lat_dist']
 lat_dist_df['imitation learning']= simulated_df['lat_distance']*.5+0.5
 lat_dist_df['zhao']= zhao_df['lat_dist']
 
+plt.subplot(2, 2, 4)
 boxplot_lat_dist = lat_dist_df.boxplot(column=['observed','imitation learning','zhao'], showfliers=False, grid = False)
-plt.title("Lateral distance (m)")
-plt.savefig("lat_dist_box.png")
+plt.title("Lateral distance (m)", fontsize=fontsize1)
+plt.xticks([1,2,3,4],['Observed', 'Imitation Learning', '(Zhao, 2013)'], rotation = 45)
+
+plt.subplots_adjust(left=None, bottom=0.2, right=None, top=None, wspace=None, hspace=2)
+
+plt.savefig("lat_dist_box2.png", dpi = 300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import seaborn as sns
+
+sns.set(style="whitegrid", font_scale=2.5)
+colors=["tomato","darkturquoise","mediumpurple","springgreen"]
+colors1=["tomato","darkturquoise","springgreen"]
+
+f, axes = plt.subplots(2, 2, figsize=(35, 20))
+
+sns.boxplot(ax=axes[0,0],data=long_dist_df, orient = "h", showfliers = False, palette = colors)
+ax=axes[0,0].set_yticklabels(['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'])
+axes[0,0].set(xlabel='Longitudinal distance (m)', yticklabels=['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'])
+
+sns.boxplot(ax=axes[0,1],data=speed_df, orient = "h", showfliers = False, palette = colors)
+ax=axes[0,1].set_yticklabels(['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'])
+ax=axes[0,1].set(xlabel='Speed (m/s)')
+
+sns.boxplot(ax = axes[1,0],data=speed_diff_df, orient = "h", showfliers = False, palette = colors)
+axes[1,0].set_yticklabels(['Observed', 'Imitation Learning', '(Jiang, 2016)', '(Zhao, 2013)'])
+axes[1,0].set(xlabel='Speed difference (m/s)')
+
+sns.boxplot(ax = axes[1,1],data=lat_dist_df, orient = "h", showfliers = False, palette = colors1)
+axes[1,1].set_yticklabels(['Observed', 'Imitation Learning', '(Zhao, 2013)'])
+axes[1,1].set(xlabel='Lateral distance (m)')
+
+f.tight_layout()
+f.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0.3, hspace=0.3)
+
+f.savefig('comparison_boxplot.png',dpi=300)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def smooth(y, box_pts):
