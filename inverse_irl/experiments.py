@@ -26,6 +26,7 @@ expert_training = csv2pickle1()
 observed_df = pd.DataFrame(np.array([[0,0,0,0,0]]),
                    columns=['ID','lat_dist','long_dist', 'speed', 'speed_diff'])
 
+len(observed_df[(observed_df['ID']==3)])
 
 for i in range(len(expert_training)):
     for j in range(len(expert_training[i]['observations'])):
